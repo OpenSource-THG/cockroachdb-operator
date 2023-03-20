@@ -1,0 +1,46 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: web-service
+  namespace: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: web-service
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: web-service
+    spec:
+      serviceAccountName: cockroachdb-operator
+      containers:
+        - image: python:3.11-slim
+          command: [ "/bin/bash", "-c" ]
+          args:
+            - pip install flask requests;
+              sleep 2147483647
+          imagePullPolicy: IfNotPresent
+          name: web-service
+          volumeMounts:
+          - mountPath: /cockroach/cockroach-certs/
+            name: client-certs
+          ports:
+          - protocol: TCP
+            containerPort: 8080
+            name: http
+      volumes:
+      - name: client-certs
+        projected:
+          defaultMode: 256
+          sources:
+          - secret:
+              items:
+              - key: ca.crt
+                path: ca.crt
+              - key: tls.crt
+                path: client.root.crt
+              - key: tls.key
+                path: client.root.key
+              name: cockroachdb-root

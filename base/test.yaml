@@ -1,0 +1,20 @@
+apiVersion: cockroachdb.thg.com/v1
+kind: Database
+metadata:
+  name: test-db
+  namespace: database
+---
+apiVersion: cockroachdb.thg.com/v1
+kind: User
+metadata:
+  name: test-user
+  namespace: database
+spec:
+  databaseGrants:
+    - database: test-db
+      grant: ALL
+  tableGrants:
+    - database: test-db
+      table: '*'
+      grant: ALL
+  credentialsSecret: test-user-crdb-creds
