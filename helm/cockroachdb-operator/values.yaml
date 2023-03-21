@@ -1,6 +1,6 @@
 crds:
   install: true
-  
+
 image:
   repository: nginx
   pullPolicy: IfNotPresent
@@ -11,6 +11,10 @@ replicaCount: 1
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+
+deployment:
+  labels: {}
+  annotations: {}
 
 podAnnotations: {}
 

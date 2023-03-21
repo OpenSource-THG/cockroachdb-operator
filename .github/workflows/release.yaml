@@ -39,5 +39,5 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ghcr.io/OpenSource-THG/cockroachdb-operator:latest
-            ghcr.io/OpenSource-THG/cockroachdb-operator:${{ env.RELEASE_VERSION }}
+            ghcr.io/opensource-thg/cockroachdb-operator:latest
+            ghcr.io/opensource-thg/cockroachdb-operator:${{ env.RELEASE_VERSION }}
