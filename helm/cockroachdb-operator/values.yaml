@@ -21,11 +21,9 @@ podAnnotations: {}
 podEnvFrom: {}
 
 podSecurityContext:
-  enabled: true
   fsGroup: 2000
 
 securityContext:
-  enabled: true
   capabilities:
     drop:
       - ALL
