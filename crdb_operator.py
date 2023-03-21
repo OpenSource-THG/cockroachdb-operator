@@ -6,7 +6,6 @@ import secrets
 import string
 import base64
 import kopf
-import json
 import os
 
 def getK8sApi():
@@ -187,7 +186,7 @@ def configure(settings: kopf.OperatorSettings, **_):
    settings.peering.standalone = True
    settings.posting.level = logging.INFO
 
-@kopf.on.create('cockroachdb.thg.com', 'v1', 'database', errors=kopf.ErrorsMode.TEMPORARY) 
+@kopf.on.create('cockroachdb.ics.cloud', 'v1', 'database', errors=kopf.ErrorsMode.TEMPORARY) 
 def kopfCreateDatabase(body, spec, **kwargs):
     api = getK8sApi()
     ci = getConnectionInfo(body, spec)
@@ -198,7 +197,7 @@ def kopfCreateDatabase(body, spec, **kwargs):
             kopf.info(body, reason='Success', message='Database already exists')
         kopf.info(body, reason='Success', message='Database created successfully')
 
-@kopf.on.create('cockroachdb.thg.com', 'v1', 'user', errors=kopf.ErrorsMode.TEMPORARY) 
+@kopf.on.create('cockroachdb.ics.cloud', 'v1', 'user', errors=kopf.ErrorsMode.TEMPORARY) 
 def kopfCreateUser(body, spec, **kwargs):
     api = getK8sApi()
     ci = getConnectionInfo(body, spec)
@@ -209,7 +208,7 @@ def kopfCreateUser(body, spec, **kwargs):
         grantTablePermissions(cockroach_conn, spec.get("tableGrants", {}), credentials_username)
         kopf.info(body, reason='Success', message='User created successfully')
 
-@kopf.on.update('cockroachdb.thg.com', 'v1', 'user', errors=kopf.ErrorsMode.TEMPORARY)
+@kopf.on.update('cockroachdb.ics.cloud', 'v1', 'user', errors=kopf.ErrorsMode.TEMPORARY)
 def kopfUpdateUser(body, meta, spec, status, old, new, diff, **kwargs):
     diff_dict = {}
     for spec, diff in { '.'.join(i[1]): {"old": i[2], "new": i[3]} for i in diff }.items():
@@ -231,7 +230,7 @@ def kopfUpdateUser(body, meta, spec, status, old, new, diff, **kwargs):
             grantTablePermissions(cockroach_conn, diff_dict["spec.tableGrants"]["add"], db_username)
         kopf.info(body, reason='Success', message='User updated successfully')
 
-@kopf.on.delete('cockroachdb.thg.com', 'v1', 'user', errors=kopf.ErrorsMode.TEMPORARY) 
+@kopf.on.delete('cockroachdb.ics.cloud', 'v1', 'user', errors=kopf.ErrorsMode.TEMPORARY) 
 def kopfDeleteUser(body, spec, **kwargs):
     api = getK8sApi()
     ci = getConnectionInfo(body, spec)
