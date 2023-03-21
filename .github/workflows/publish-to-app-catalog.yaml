@@ -1,0 +1,16 @@
+name: 'Push to App Catalog'
+
+on:
+  release:
+    types: [published]
+
+
+jobs:
+  push_to_app_catalog:
+    uses: giantswarm/app-build-suite/.github/workflows/push-to-app-catalog.yaml@v1.1.2
+    with:
+      app_catalog: app-catalog
+      chart: cockroachdb-operator
+      organization: OpenSource-THG
+    secrets:
+      envPAT: ${{ secrets.SA_TOKEN }}
