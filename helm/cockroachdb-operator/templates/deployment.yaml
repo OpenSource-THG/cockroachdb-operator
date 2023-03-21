@@ -26,6 +26,7 @@ spec:
       labels:
         {{- include "cockroachdb-operator.selectorLabels" . | nindent 8 }}
     spec:
+      serviceAccountName: {{ include "cockroachdb-operator.fullname" . }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
