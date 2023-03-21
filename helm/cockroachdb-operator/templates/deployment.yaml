@@ -52,5 +52,11 @@ spec:
             httpGet:
               path: /healthz
               port: 8080
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmpfs
+          volumes:
+            - name: tmpfs
+              emptyDir: {}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
