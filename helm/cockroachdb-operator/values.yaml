@@ -2,7 +2,7 @@ crds:
   install: true
 
 image:
-  repository: nginx
+  repository: ghcr.io/opensource-thg/cockroachdb-operator
   pullPolicy: IfNotPresent
   tag: ""
 
