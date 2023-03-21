@@ -1,0 +1,38 @@
+crds:
+  install: true
+  
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: ""
+
+replicaCount: 1
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podEnvFrom: {}
+
+podSecurityContext:
+  enabled: true
+  fsGroup: 2000
+
+securityContext:
+  enabled: true
+  capabilities:
+    drop:
+      - ALL
+  runAsNonRoot: true
+  runAsUser: 1000
+  readOnlyRootFilesystem: true
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
