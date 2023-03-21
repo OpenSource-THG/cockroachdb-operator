@@ -57,12 +57,12 @@ def createCockroachConnection(api, host, cert_secret_name, cert_secret_namespace
     deleteFiles(certificate_files.values())
     return cockroach_conn
 
-def getConnectionInfo(body, spec):
-    namespace = body['metadata']['namespace']
+def getConnectionInfo(spec):
+    cockroach_namespace = spec.get("cockroachNamespace", "database")
     return {
-      "host": spec.get("cockroachServiceName", f"cockroachdb-public.{namespace}"),
+      "host": spec.get("cockroachServiceName", f"cockroachdb-public.{cockroach_namespace}"),
       "certSecretName": spec.get("cockroachRootSecret", "cockroachdb-root"),
-      "certSecretNamespace": namespace
+      "certSecretNamespace": cockroach_namespace
     }
 
 def generatePassword(password_length = 18):
@@ -189,7 +189,7 @@ def configure(settings: kopf.OperatorSettings, **_):
 @kopf.on.create('cockroachdb.ics.cloud', 'v1', 'database', errors=kopf.ErrorsMode.TEMPORARY) 
 def kopfCreateDatabase(body, spec, **kwargs):
     api = getK8sApi()
-    ci = getConnectionInfo(body, spec)
+    ci = getConnectionInfo(spec)
     with createCockroachConnection(api, ci['host'], ci['certSecretName'], ci['certSecretNamespace']) as cockroach_conn:
         try:
             cockroach_conn.execute(f"CREATE DATABASE \"{body['metadata']['name']}\"")
@@ -200,7 +200,7 @@ def kopfCreateDatabase(body, spec, **kwargs):
 @kopf.on.create('cockroachdb.ics.cloud', 'v1', 'user', errors=kopf.ErrorsMode.TEMPORARY) 
 def kopfCreateUser(body, spec, **kwargs):
     api = getK8sApi()
-    ci = getConnectionInfo(body, spec)
+    ci = getConnectionInfo(spec)
     with createCockroachConnection(api, ci['host'], ci['certSecretName'], ci['certSecretNamespace']) as cockroach_conn:
         credentials_username = body['metadata']['name']
         createCockroachUser(api, cockroach_conn, spec, body)
@@ -217,7 +217,7 @@ def kopfUpdateUser(body, meta, spec, status, old, new, diff, **kwargs):
             "remove": [x for x in diff['old'] if x not in diff['new']]
         }
     api = getK8sApi()
-    ci = getConnectionInfo(body, body.spec)
+    ci = getConnectionInfo(body.spec)
     db_username = body['metadata']['name']
     with createCockroachConnection(api, ci['host'], ci['certSecretName'], ci['certSecretNamespace']) as cockroach_conn:
         if len(diff_dict["spec.databaseGrants"]["remove"]) > 0:
@@ -233,7 +233,7 @@ def kopfUpdateUser(body, meta, spec, status, old, new, diff, **kwargs):
 @kopf.on.delete('cockroachdb.ics.cloud', 'v1', 'user', errors=kopf.ErrorsMode.TEMPORARY) 
 def kopfDeleteUser(body, spec, **kwargs):
     api = getK8sApi()
-    ci = getConnectionInfo(body, spec)
+    ci = getConnectionInfo(spec)
     with createCockroachConnection(api, ci['host'], ci['certSecretName'], ci['certSecretNamespace']) as cockroach_conn:
         credentials_secret_name = spec['credentialsSecret']
         credentials_secret_namespace = body['metadata']['namespace']
